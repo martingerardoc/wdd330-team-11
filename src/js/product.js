@@ -1,4 +1,4 @@
-import { setLocalStorage } from "./utils.mjs";
+import { getLocalStorage, setLocalStorage } from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
 
 const dataSource = new ProductData("tents");
@@ -29,15 +29,18 @@ function productTemplate(product) {
 }
 
 function addProductToCart(product) {
-  let cartItems = localStorage.getItem("so-cart");
+  let cartItems = getLocalStorage("so-cart") || [];
 
-  if (cartItems) {
-    cartItems = JSON.parse(cartItems);
+  const existingItem = cartItems.find(
+    (item) => item.Id === product.Id
+  );
+
+  if (existingItem) {
+    existingItem.quantity += 1;
   } else {
-    cartItems = [];
+    product.quantity = 1;
+    cartItems.push(product);
   }
-
-  cartItems.push(product);
 
   setLocalStorage("so-cart", cartItems);
 }

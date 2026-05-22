@@ -1,13 +1,22 @@
 import { getLocalStorage, setLocalStorage } from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
 
-const dataSource = new ProductData("tents");
-const product = await dataSource.findProductById(productId);
-
 const params = new URLSearchParams(window.location.search);
 
 const productId = params.get("product");
+const dataSource = new ProductData("tents");
 
+async function init() {
+  const product =
+    await dataSource.findProductById(productId);
+
+  document.querySelector(".product-detail").innerHTML =
+    productTemplate(product);
+  document
+    .getElementById("addToCart")
+    .addEventListener("click", addToCartHandler);
+}
+init();
 
 function productTemplate(product) {
   return `

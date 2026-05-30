@@ -1,17 +1,26 @@
-import ProductData from "./ProductData.mjs";
-import ProductList from "./ProductList.mjs";
-import { loadHeaderFooter, getParam } from "./utils.mjs";
+import ExternalServices from "./ExternalServices.mjs";
 
-loadHeaderFooter();
+const dataSource = new ExternalServices("tents");
 
-const category = getParam("category");
+async function loadProducts() {
+  const products = await dataSource.getData();
 
-const dataSource = new ProductData();
-const listElement = document.querySelector(".product-list");
+  const list = document.querySelector(".product-list");
 
-const myList = new ProductList(category, dataSource, listElement);
+  list.innerHTML = products
+    .map((product) => {
+      return `
+        <li class="product-card">
+          <a href="/product/index.html?product=${product.Id}">
+            <img src="${product.Images.PrimaryMedium}" alt="${product.Name}" />
+            <h3>${product.Brand.Name}</h3>
+            <h2>${product.NameWithoutBrand}</h2>
+            <p>$${product.FinalPrice}</p>
+          </a>
+        </li>
+      `;
+    })
+    .join("");
+}
 
-myList.init();
-
-document.querySelector(".title").textContent =
-  `Top Products: ${category}`;
+loadProducts();

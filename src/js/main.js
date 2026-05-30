@@ -1,18 +1,10 @@
 import Alert from "./Alert.js";
 import { loadHeaderFooter } from "./utils.mjs";
 
-
 const alert = new Alert();
 alert.init();
 
 loadHeaderFooter();
-
-const productLinks = {
-  "880RR": "marmot-ajax-3.html",
-  "985RF": "northface-talus-4.html",
-  "985PR": "northface-alpine-3.html",
-  "344YJ": "cedar-ridge-rimrock-2.html"
-};
 
 async function getProducts() {
   const response = await fetch("/json/tents.json");
@@ -27,9 +19,9 @@ async function getProducts() {
 function productTemplate(product) {
   return `
     <li class="product-card">
-      <a href="product_pages/${productLinks[product.Id]}">
+      <a href="/product/index.html?product=${product.Id}">
         <img
-          src="${product.Image.replace('../', '/')}"
+          src="${product.Image.replace("../", "/")}"
           alt="${product.Name}"
         />
 
@@ -50,26 +42,17 @@ function productTemplate(product) {
 }
 
 function renderProductList(products, parentElement) {
-  const html = products.map(productTemplate).join("");
-
-  parentElement.innerHTML = html;
+  parentElement.innerHTML = products
+    .map(productTemplate)
+    .join("");
 }
 
 async function setupProducts() {
   const products = await getProducts();
 
-  // only products with existing detail pages
-  const filteredProducts = [
-    products[0],
-    products[1],
-    products[3],
-    products[5]
-  ];
+  const productList = document.querySelector(".product-list");
 
-  const productList =
-    document.querySelector(".product-list");
-
-  renderProductList(filteredProducts, productList);
+  renderProductList(products, productList);
 }
 
 setupProducts();
